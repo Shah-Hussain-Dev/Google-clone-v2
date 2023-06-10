@@ -9,8 +9,8 @@ function App() {
     <BrowserRouter>
     <Routes>
         <Route path="/" element={<Home/>}/>
-        <Route path="/search" element={<SearchResult/>}/>
-    </Routes>
+        <Route path="/:query/:searchIndex" element={<SearchResult/>}/>
+    </Routes> 
     </BrowserRouter>
   );
 }
