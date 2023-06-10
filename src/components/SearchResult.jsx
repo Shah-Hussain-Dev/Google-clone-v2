@@ -10,6 +10,11 @@ import Pagination from "./Pagination";
 import { Context } from "../utils/ContextApi";
 
 const SearchResult = () => {
+  const [result,setResult] = useState()
+  const {query,startIndex} = useParams()
+  const {imageSearch} = useContext(Context)
+
+  
   return (
     <div className="flex flex-col min-h-[100vh]">
       <SearchResultHeader />
