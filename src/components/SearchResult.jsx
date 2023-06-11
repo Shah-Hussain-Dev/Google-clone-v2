@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 
 import { fetchDataFromApi } from "../utils/api";
@@ -10,15 +10,49 @@ import Pagination from "./Pagination";
 import { Context } from "../utils/ContextApi";
 
 const SearchResult = () => {
-  const [result,setResult] = useState()
-  const {query,startIndex} = useParams()
-  const {imageSearch} = useContext(Context)
+  const [result, setResult] = useState();
+  const { query, startIndex } = useParams();
+  const { imageSearch } = useContext(Context);
 
-  
+  useEffect(() => {
+    fetchSearchResults();
+    window.scrollTo(0, 0);
+  }, [query, startIndex, imageSearch]);
+
+  const fetchSearchResults = () => {
+    let payload = { q: query, start: startIndex };
+    if (imageSearch) {
+      payload.searchType = "image";
+    }
+    fetchDataFromApi(payload).then((res) => {
+      console.log(res);
+      setResult(res);
+    });
+  };
+
+  if (!result) return;
+  const { items, queries, searchInformation } = result;
+  console.log(result);
   return (
-    <div className="flex flex-col min-h-[100vh]">
+    <div className="flex flex-col  min-h-[100vh]">
       <SearchResultHeader />
-      <main className="grow p-[12px] pb-0 md:pr-5 md:pl-20"></main>
+      <main className="grow p-[12px] items-center flex flex-col pb-0 md:pr-5 md:pl-20">
+        <div className="flex text-lg  font-bold mb-3 drop-shadow-lg animate__animated animate__fadeInDown">{`About ${searchInformation.formattedTotalResults} results in (${searchInformation.formattedSearchTime})`}</div>
+        {!imageSearch ? (
+          <div className="grid md:grid-cols-2 gap-x-12 ">
+            {items.map((item, index) => (
+              <SearchedItemTemplate key={index} data={item} />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-6 ">
+            {items.map((item, index) => (
+              <SearchedImageItemTemplate key={index} data={item} />
+            ))}
+          </div>
+        )}
+        <Pagination queries={queries} />
+      </main>
       <Footer />
     </div>
   );
